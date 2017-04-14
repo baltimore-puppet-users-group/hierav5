@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
 	# Create a forwarded port mapping which allows access to a specific port
 	# within the machine from a port on the host machine. In the example below,
 	# accessing "localhost:8080" will access port 80 on the guest machine.
-	# config.vm.network "forwarded_port", guest: 80, host: 8080
+	#	config.vm.network "forwarded_port", guest: 80, host: 8080
 
 	# Create a private network, which allows host-only access to the machine
 	# using a specific IP.
@@ -70,23 +70,35 @@ Vagrant.configure("2") do |config|
 	# SHELL
 	{
 		"web1" => '192.168.42.3',
-		"db1" => '192.168.42.4',
+		"web2" => '192.168.42.4',
+		"dc1" => '192.168.42.5'
 	}.each do |node, ip|
 		config.vm.define "#{node}" do |config|
 			config.vm.network :private_network, ip: ip
-			if (node == "client") 
-				config.vm.network "forwarded_port", guest: 8500, host: 8501
-			end
-			config.vm.hostname = "#{node}.test"
+			config.vm.hostname = "#{node}.acmeholding.com"
 			config.vm.provider "virtualbox" do |vb|
 				vb.memory = "1024"
+			end
+			case node
+			when "web1"
+				config.vm.network "forwarded_port", guest: 80, host: 8080
+				site = "acme"
+			when "web2"
+				config.vm.network "forwarded_port", guest: 80, host: 8081
+
+				site = "thinkit"
 			end
 			config.vm.provision "shell", inline: <<-SHELL
      sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
      sudo yum install puppet-agent -y
      sudo service firewalld stop
-     sudo /opt/puppetlabs/bin/puppet apply /vagrant/test.pp
-	  SHELL
+     sudo sh -c 'echo "sitename=#{site}" >/opt/puppetlabs/facter/facts.d/sitename.txt'
+     sudo /opt/puppetlabs/bin/puppet resource package git ensure=installed
+     sudo /opt/puppetlabs/puppet/bin/gem install r10k
+     sudo /opt/puppetlabs/puppet/bin/r10k deploy -c /vagrant/r10k.yaml environment -pv
+
+     sudo /opt/puppetlabs/bin/puppet apply /vagrant/manifests/site.pp
+			SHELL
 		end
 	end
 

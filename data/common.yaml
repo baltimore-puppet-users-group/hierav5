@@ -1,0 +1,10 @@
+profiles::options::firewall: true
+classes:
+        - profiles::ntp
+php::extensions:
+        mysqli: {}
+lookup_options:
+        php::extensions:
+                merge: hash
+        classes:
+                merge: unique

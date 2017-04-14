@@ -1,0 +1,14 @@
+version: 5
+defaults:
+  datadir: "data" 
+  data_hash: "yaml_data"
+hierarchy:
+  - name: "lookup_key function"
+    lookup_key: "profiles::lookup_key"
+  - name: "data_hash function"
+    data_hash: "profiles::data_hash"
+  - name: "flatfile" 
+    paths:
+      - "osfamily/%{facts.osfamily}.yaml"
+      - "os/%{facts.operatingsystem}.yaml"
+      - "common.yaml"

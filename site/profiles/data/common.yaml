@@ -1,0 +1,7 @@
+profiles::options_table:
+        profiles::ntp::firewall: 'profiles::options::firewall'
+        profiles::wordpress::firewall: 'profiles::options::firewall'
+        profiles::ntp::syslog: 'profiles::options::syslog'
+profiles::options_defaults:
+        profiles::options::firewall: false
+        profiles::options::syslog: false

@@ -1,0 +1,4 @@
+sources:
+         puppet:
+                 basedir: /etc/puppetlabs/code/environments
+                 remote: file:///vagrant

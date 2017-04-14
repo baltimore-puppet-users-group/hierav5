@@ -1,0 +1,2 @@
+profiles::params::config: "/etc/ntpd.conf"
+profiles::params::keys_file: "/etc/ntpd/keys"

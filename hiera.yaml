@@ -1,0 +1,27 @@
+---
+version: 5 # Specific version of hiera we are using, required for v4 and v5
+defaults:  # Used for any hierarchy level that omits these keys.
+  datadir: "data"         # This path is relative to hiera.yaml's directory.
+  data_hash: "yaml_data"  # Use the built-in YAML backend.
+hierarchy: # Each hierarchy consists of multiple levels
+  - name: "site data"
+    path: "site/%{facts.sitename}.yaml"
+  - name: "OSFamily"
+    path: "osfamily/%{facts.osfamily}.yaml"
+  - name: "OS Name"
+    path: "os/%{facts.operatingsystem}.yaml"
+  - name: "Datacenter"
+    path: "datacenter/%{facts.datacenter}.yaml"
+  - name: "Hostname"
+    path: "host/%{facts.fqdn}.yaml"
+  - name: "datamodules"
+    datadir: "delegated-data"
+    paths:
+            - "%{facts.sitename}/osfamily/%{facts.osfamily}.yaml"
+            - "%{facts.sitename}/os/%{facts.operatingsystem}.yaml"
+            - "%{facts.sitename}/host/%{facts.fqdn}.yaml"
+            - "%{facts.sitename}/common.yaml"
+  - name: "global settings"
+    lookup_key: "profiles::global_settings"
+  - name: "Common"
+    path: "common.yaml"
